@@ -411,8 +411,8 @@ export function WelcomeView() {
           What to import
         </div>
         <p class="row-sub" style={{ fontSize: '14px', marginBottom: '12px' }}>
-          Pick the language folder. Levels, lessons, readings and the reading booklet are found automatically. On a phone,
-          open each level folder, choose Select All, and pick the files; Revisit sorts them into levels from their names.
+          Pick the language folder. Levels, lessons, readings and the reading booklet are found automatically. On an
+          iPhone, open the Files app, touch and hold the language folder, choose Compress, and pick the .zip here.
         </p>
         <div class="folder-diagram">
           📁 Italian

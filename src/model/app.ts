@@ -1,7 +1,7 @@
 import { batch, computed, signal } from '@preact/signals'
 import { player } from '../audio/player'
 import { deletePaths } from '../storage/idb'
-import { type ImportProgress, importFiles, placeFiles } from '../storage/importer'
+import { type ImportProgress, type Picked, expandZips, importFiles, placeFiles } from '../storage/importer'
 import { listAllFiles, releaseURL, urlFor } from '../storage/sources'
 import { isInProgress, progress } from './progress'
 import { scan } from './scanner'
@@ -185,10 +185,16 @@ async function probeDurations() {
   }
 }
 
-export async function importPicked(picked: Parameters<typeof placeFiles>[0]) {
-  const files = placeFiles(picked)
+export async function importPicked(picked: Picked[]) {
+  let files: ReturnType<typeof placeFiles>
+  try {
+    files = placeFiles(await expandZips(picked))
+  } catch (e) {
+    message.value = `Couldn't open that file: ${(e as Error).message}`
+    return
+  }
   if (files.length === 0) {
-    message.value = 'No audio or PDF files there. Pick the language folder (for example “Italian”).'
+    message.value = 'No audio or PDF files there. Pick the language folder (for example “Italian”) or a .zip of it.'
     return
   }
   const before = new Set(allLevels.value.map((l) => l.id))

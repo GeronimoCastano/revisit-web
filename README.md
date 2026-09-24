@@ -31,9 +31,13 @@ Italian/                    ← the language
   Level 2/
 ```
 
-Lesson numbers come from the file names (`Unit 05`, `U05`, `Lesson_05`, …). On a phone, where
-you can't pick a folder, select all the files in a level folder instead; Revisit places them
-using the language and level in their names (`… Italian 3 - Unit 01.mp3`).
+Lesson numbers come from the file names (`Unit 05`, `U05`, `Lesson_05`, …).
+
+On an iPhone, where Safari can't pick a folder, compress it first: in the Files app, touch and
+hold the language folder, choose **Compress**, then pick the `.zip` in Revisit. The zip is read
+one file at a time, so even a multi-gigabyte course doesn't have to fit in memory. Picking
+loose files works too; Revisit places them using the language and level in their names
+(`… Italian 3 - Unit 01.mp3`).
 
 ## Development
 

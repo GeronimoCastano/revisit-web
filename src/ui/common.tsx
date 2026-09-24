@@ -120,7 +120,7 @@ export function ImportInputs() {
         class="visually-hidden"
         type="file"
         multiple
-        accept="audio/*,.mp3,.m4a,.m4b,.aac,.wav,.flac,.ogg,.opus,.pdf,application/pdf"
+        accept="audio/*,.mp3,.m4a,.m4b,.aac,.wav,.flac,.ogg,.opus,.pdf,application/pdf,.zip,application/zip"
         onChange={onChange}
         tabIndex={-1}
         aria-hidden="true"

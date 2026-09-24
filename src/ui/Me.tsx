@@ -316,7 +316,7 @@ export function ImportButtons() {
   )
   const files = (
     <button class={`btn block ${canPickFolders ? 'secondary' : ''}`} onClick={() => openImporter('files')}>
-      <Upload size={20} /> Pick audio and PDF files
+      <Upload size={20} /> Pick a .zip or files
     </button>
   )
   return (
