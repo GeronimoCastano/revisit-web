@@ -1,0 +1,29 @@
+{
+  "name": "revisit",
+  "version": "0.1.0",
+  "description": "Play your own language course audio and pick up every lesson where you left it.",
+  "scripts": {
+    "dev": "vite",
+    "dev:lan": "vite --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc",
+    "check-booklets": "vite-node scripts/check-booklets.ts --"
+  },
+  "dependencies": {
+    "@fontsource-variable/nunito": "^5.3.0",
+    "@preact/signals": "^2.11.2",
+    "pdfjs-dist": "^4.10.38",
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
+  },
+  "private": true,
+  "type": "module"
+}
