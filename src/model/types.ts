@@ -82,8 +82,11 @@ export function hasReadingPerLesson(level: Level): boolean {
 /** Pimsleur attaches reading lessons to the last lessons of a level
  *  (e.g. 16 readings in a 30-lesson level begin in Lesson 15). */
 export function readingsBeginAtLesson(level: Level): number | undefined {
-  if (!hasReadingPerLesson(level) || level.lessons.length === 0) return undefined
-  return Math.max(1, level.lessons.length - level.readings.length + 1)
+  const last = level.lessons[level.lessons.length - 1]?.number
+  if (!hasReadingPerLesson(level) || last === undefined) return undefined
+  // Levels have 30 lessons; count from 30 even when the last few files are missing.
+  const total = last >= 25 ? Math.max(last, 30) : last
+  return Math.max(1, total - level.readings.length + 1)
 }
 
 export function readingForLesson(level: Level, lesson: number): Track | undefined {

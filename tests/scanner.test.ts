@@ -112,3 +112,15 @@ describe('scan', () => {
     expect(courses[0].levels[0].number).toBe(3)
   })
 })
+
+describe('readings', () => {
+  it('start 30 − readings + 1 even when the last lessons are missing', () => {
+    const [course] = scan(
+      files([
+        ...range(27, (i) => `Spanish/Level 4/Spanish 4 - Unit ${pad(i)}.mp3`),
+        ...range(20, (i) => `Spanish/Level 4/Reading/Spanish 4 - Reading ${pad(i)}.mp3`),
+      ]),
+    )
+    expect(readingsBeginAtLesson(course.levels[0])).toBe(11)
+  })
+})
