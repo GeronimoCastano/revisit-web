@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { useRef, useState } from 'preact/hooks'
 import { player, skipInterval } from '../audio/player'
 import { drivingMode, levelByID, play, playerRoute, showLessonList, suggestedReading, toggleCompleted } from '../model/app'
@@ -41,29 +42,28 @@ export function LessonPlayer() {
     <div class="sheet" role="dialog" aria-label={`${trackTitle(track)} player`}>
       <div class="sheet-body player">
         <div class="topbar" style={{ width: '100%' }}>
-          <button class="icon-btn" onClick={close} aria-label="Close player">
+          <button class="icon-btn" onClick={close} aria-label={tr("Close player")}>
             <ChevronDown size={28} />
           </button>
-          <span class="chip">{track.courseName} · Level {track.levelNumber}</span>
-          <button class="icon-btn" onClick={() => setMenu(!menu)} aria-label="More" aria-expanded={menu}>
+          <span class="chip">{track.courseName}  {tr("· Level")} {track.levelNumber}</span>
+          <button class="icon-btn" onClick={() => setMenu(!menu)} aria-label={tr("More")} aria-expanded={menu}>
             <Ellipsis size={24} />
           </button>
         </div>
         {menu && (
           <div class="menu" role="menu" onClick={() => setMenu(false)}>
             <button role="menuitem" onClick={() => player.restart()}>
-              <Restart size={20} /> Restart {track.kind === 'lesson' ? 'lesson' : 'from the start'}
+              <Restart size={20} />  {tr("Restart")} {track.kind === 'lesson' ? 'lesson' : tr("from the start")}
             </button>
             <button role="menuitem" onClick={() => toggleCompleted(track)}>
-              <Check size={20} /> {done ? 'Mark as not finished' : 'Mark as finished'}
+              <Check size={20} /> {done ? tr("Mark as not finished") : tr("Mark as finished")}
             </button>
             <button role="menuitem" onClick={() => (progress.autoplay = !progress.autoplay)}>
-              <Repeat size={20} /> Autoplay next <span class="spacer" />
-              <span class="muted">{progress.autoplay ? 'On' : 'Off'}</span>
+              <Repeat size={20} />  {tr("Autoplay next")} <span class="spacer" />
+              <span class="muted">{progress.autoplay ? tr("On") : tr("Off")}</span>
             </button>
             <button role="menuitem" onClick={() => (drivingMode.value = true)}>
-              <Car size={20} /> Driving mode
-            </button>
+              <Car size={20} />  {tr("Driving mode")} </button>
           </div>
         )}
 
@@ -73,7 +73,7 @@ export function LessonPlayer() {
           <h1 class="player-title">{trackTitle(track)}</h1>
           <div class="player-time">
             {clock(player.currentTime.value)}
-            {player.duration.value > 0 && `  ·  ${clock(player.remaining)} left`}
+            {player.duration.value > 0 && tr("  ·  {0} left", [clock(player.remaining)])}
           </div>
         </div>
 
@@ -82,15 +82,15 @@ export function LessonPlayer() {
         <Transport />
 
         <div class="segmented">
-          <button onClick={() => setSpeedSheet(true)} aria-label="Playback speed">
+          <button onClick={() => setSpeedSheet(true)} aria-label={tr("Playback speed")}>
             <Gauge size={17} /> {formatRate(player.rate.value)}
           </button>
           {track.kind === 'lesson' && level && <ReadingButton track={track} />}
           <button
             onClick={() => level && (showLessonList.value = { level, kind: track.kind })}
-            aria-label={track.kind === 'guide' ? 'Guides' : 'All lessons'}
+            aria-label={track.kind === 'guide' ? tr("Guides") : tr("All lessons")}
           >
-            <List size={17} /> {track.kind === 'guide' ? 'Guides' : 'Lessons'}
+            <List size={17} /> {track.kind === 'guide' ? tr("Guides") : tr("Lessons")}
           </button>
         </div>
       </div>
@@ -105,16 +105,15 @@ function ReadingButton({ track }: { track: Track }) {
   const level = levelByID(track.levelID)!
   const start = readingsBeginAtLesson(level)
   const reading = readingForLesson(level, track.number) ?? (start === undefined ? suggestedReading(level) : undefined)
-  const unavailable = start === undefined ? 'No reading audio in this level' : `Readings begin in Lesson ${start}`
+  const unavailable = start === undefined ? tr("No reading audio in this level") : tr("Readings begin in Lesson {0}", [start])
   return (
     <button
       disabled={!reading}
       onClick={() => reading && play(reading)}
-      aria-label={reading ? `Open ${trackTitle(reading)}` : unavailable}
+      aria-label={reading ? tr("Open {0}", [trackTitle(reading)]) : unavailable}
       title={reading ? undefined : unavailable}
     >
-      <BookOpen size={17} /> Reading
-    </button>
+      <BookOpen size={17} />  {tr("Reading")} </button>
   )
 }
 
@@ -122,19 +121,19 @@ export function Transport() {
   const playing = player.isPlaying.value
   return (
     <div class="transport">
-      <button class="edge" onClick={() => player.previous()} aria-label="Previous">
+      <button class="edge" onClick={() => player.previous()} aria-label={tr("Previous")}>
         <SkipBack size={22} />
       </button>
-      <button class="skip press" onClick={() => player.skip(-skipInterval)} aria-label="Back 10 seconds">
+      <button class="skip press" onClick={() => player.skip(-skipInterval)} aria-label={tr("Back 10 seconds")}>
         <Back10 size={26} strokeWidth={2} />
       </button>
-      <button class="big press" onClick={() => player.togglePlayPause()} aria-label={playing ? 'Pause' : 'Play'}>
+      <button class="big press" onClick={() => player.togglePlayPause()} aria-label={playing ? tr("Pause") : tr("Play")}>
         {playing ? <Pause size={34} /> : <Play size={34} class="icon-play" />}
       </button>
-      <button class="skip press" onClick={() => player.skip(skipInterval)} aria-label="Forward 10 seconds">
+      <button class="skip press" onClick={() => player.skip(skipInterval)} aria-label={tr("Forward 10 seconds")}>
         <Forward10 size={26} strokeWidth={2} />
       </button>
-      <button class="edge" onClick={() => player.next()} disabled={!player.hasNext} aria-label="Next">
+      <button class="edge" onClick={() => player.next()} disabled={!player.hasNext} aria-label={tr("Next")}>
         <SkipForward size={22} />
       </button>
     </div>
@@ -178,7 +177,7 @@ function ProgressRing({ track }: { track: Track }) {
       ref={ref}
       class="ring-wrap"
       role="slider"
-      aria-label="Position"
+      aria-label={tr("Position")}
       aria-valuemin={0}
       aria-valuemax={Math.round(duration)}
       aria-valuenow={Math.round(player.currentTime.value)}
@@ -220,7 +219,7 @@ function ProgressRing({ track }: { track: Track }) {
         />
         <circle cx={kx} cy={ky} r="4.4" fill="#fff" stroke="var(--primary)" stroke-width="2.2" />
       </svg>
-      {drag !== undefined && <div class="ring-hint">Release to jump to {clock(drag * duration)}</div>}
+      {drag !== undefined && <div class="ring-hint">{tr("Release to jump to")} {clock(drag * duration)}</div>}
     </div>
   )
 }
@@ -229,11 +228,10 @@ export function SpeedSheet({ close }: { close: () => void }) {
   useEscape(close)
   return (
     <div class="sheet dim" onClick={close}>
-      <div class="sheet-panel" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Playback speed">
+      <div class="sheet-panel" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={tr("Playback speed")}>
         <div class="grabber" />
         <h2 class="row-title" style={{ marginBottom: '14px' }}>
-          Playback speed
-        </h2>
+           {tr("Playback speed")} </h2>
         <div class="speeds">
           {speeds.map((s) => (
             <button
@@ -257,10 +255,10 @@ export function AutoplayRow() {
   return (
     <div class="list-row">
       <div class="grow">
-        <div class="row-title">Autoplay next</div>
-        <div class="row-sub">Start the next one when this one ends</div>
+        <div class="row-title">{tr("Autoplay next")}</div>
+        <div class="row-sub">{tr("Start the next one when this one ends")}</div>
       </div>
-      <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label="Autoplay next" />
+      <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label={tr("Autoplay next")} />
     </div>
   )
 }

@@ -1370,3 +1370,13 @@ p {
     transition: none !important;
   }
 }
+
+.list-row select {
+  max-width: 48%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+}

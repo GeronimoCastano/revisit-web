@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { useEffect, useState } from 'preact/hooks'
 import { booklet, courses, drivingMode, hasScanned, importPicked, playerRoute, showCoursePicker, showLessonList, tab } from '../model/app'
 import { pickedFromDrop } from '../storage/importer'
@@ -55,7 +56,7 @@ export function App() {
       <CompletionBanner />
       <ImportBanner />
       <MessageBanner />
-      {dragging && <div class="drop-hint">Drop a ZIP file to import it</div>}
+      {dragging && <div class="drop-hint">{tr("Drop a ZIP file to import it")}</div>}
     </div>
   )
 }

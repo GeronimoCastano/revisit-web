@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { player } from '../audio/player'
 import {
@@ -36,13 +37,13 @@ function LevelHome({ level }: { level: Level }) {
     <main class="screen">
       <header class="header">
         <div>
-          <button class="chip press" onClick={() => (showCoursePicker.value = true)} aria-label="Change language or level">
-            {level.courseName} · Level {level.number}
+          <button class="chip press" onClick={() => (showCoursePicker.value = true)} aria-label={tr("Change language or level")}>
+            {level.courseName}  {tr("· Level")} {level.number}
             <ChevronDown size={14} strokeWidth={3} />
           </button>
           <h1 class="greeting">{greeting(level.courseName)}</h1>
         </div>
-        <div class="streak-badge" title={`${streak}-day streak`} aria-label={`${streak}-day streak`}>
+        <div class="streak-badge" title={tr("{0}-day streak", [streak])} aria-label={tr("{0}-day streak", [streak])}>
           <Flame size={18} />
           {streak}
         </div>
@@ -50,11 +51,11 @@ function LevelHome({ level }: { level: Level }) {
 
       {lesson && <Hero lesson={lesson} />}
 
-      <section aria-label="Lessons">
+      <section aria-label={tr("Lessons")}>
         <div class="section-head">
-          <h2>Your path</h2>
+          <h2>{tr("Your path")}</h2>
           <span class="muted">
-            {done} / {level.lessons.length} done
+            {done} / {level.lessons.length} {tr("done")}
           </span>
         </div>
         <LessonPath level={level} selected={lesson?.number} onSelect={setSelected} />
@@ -75,14 +76,14 @@ function Hero({ lesson }: { lesson: Track }) {
   const position = isCurrent ? player.currentTime.value : p.position
   const duration = (isCurrent && player.duration.value) || p.duration
   const f = p.completed ? 1 : duration > 0 ? position / duration : 0
-  const eyebrow = p.completed ? 'Completed' : isInProgress(p) || (isCurrent && position > 5) ? 'In progress' : 'Up next'
+  const eyebrow = p.completed ? tr("Completed") : isInProgress(p) || (isCurrent && position > 5) ? tr("In progress") : tr("Up next")
   const sub = p.completed
-    ? 'Done · play it again any time'
+    ? tr("Done · play it again any time")
     : position > 5 && duration > 0
-      ? `${minutes(duration - position)} left${f > 0.4 && f < 0.6 ? ' · halfway there' : ''}`
+      ? tr("{0} left{1}", [minutes(duration - position), f > 0.4 && f < 0.6 ? tr(" · halfway there") : ''])
       : duration > 0
         ? minutes(duration)
-        : 'Ready when you are'
+        : tr("Ready when you are")
 
   const onPlay = () => {
     if (isCurrent) {
@@ -108,7 +109,7 @@ function Hero({ lesson }: { lesson: Track }) {
             </div>
           )}
         </button>
-        <button class="play-fab" onClick={onPlay} aria-label={playing ? 'Pause' : `Play ${trackTitle(lesson)}`}>
+        <button class="play-fab" onClick={onPlay} aria-label={playing ? tr("Pause") : tr("Play {0}", [trackTitle(lesson)])}>
           {playing ? <Pause size={26} /> : <Play size={26} class="icon-play" />}
         </button>
       </div>
@@ -133,7 +134,7 @@ function LessonPath({ level, selected, onSelect }: { level: Level; selected?: nu
             key={t.id}
             class={`path-item ${t.number === selected ? 'selected' : ''}`}
             onClick={() => onSelect(t.number)}
-            aria-label={`${trackTitle(t)}${p.completed ? ', completed' : ''}`}
+            aria-label={`${trackTitle(t)}${p.completed ? tr(", completed") : ''}`}
             aria-pressed={t.number === selected}
           >
             <div class={`path-dot ${state}`}>
@@ -156,8 +157,8 @@ function ReadingTile({ level, lesson }: { level: Level; lesson?: Track }) {
           <BookOpen size={19} />
         </span>
         <span>
-          <div class="tile-title">Reading</div>
-          <div class="tile-sub">No reading audio in this level</div>
+          <div class="tile-title">{tr("Reading")}</div>
+          <div class="tile-sub">{tr("No reading audio in this level")}</div>
         </span>
       </button>
     )
@@ -168,20 +169,20 @@ function ReadingTile({ level, lesson }: { level: Level; lesson?: Track }) {
   const p = reading ? progress.progress(reading.id) : undefined
   const sub = reading
     ? p?.completed
-      ? 'Done · read it again'
+      ? tr("Done · read it again")
       : p && isInProgress(p)
-        ? `${minutes(remaining(p))} left`
+        ? tr("{0} left", [minutes(remaining(p))])
         : p?.duration
-          ? `${minutes(p.duration)} read-along`
-          : 'Read along'
-    : `Readings begin in Lesson ${start}`
+          ? tr("{0} read-along", [minutes(p.duration)])
+          : tr("Read along")
+    : start === undefined ? tr("No reading audio in this level") : tr("Readings begin in Lesson {0}", [start])
   return (
     <button class="tile press" onClick={() => (reading ? play(reading) : (tab.value = 'reading'))}>
       <span class="badge">
         <BookOpen size={19} />
       </span>
       <span>
-        <div class="tile-title">{reading ? trackTitle(reading) : 'Reading'}</div>
+        <div class="tile-title">{reading ? trackTitle(reading) : tr("Reading")}</div>
         <div class="tile-sub">{sub}</div>
       </span>
     </button>
@@ -194,14 +195,14 @@ function BookletTile({ level }: { level: Level }) {
     <button
       class="tile press"
       disabled={!file}
-      onClick={() => file && (booklet.value = { file, title: `Level ${level.number} booklet` })}
+      onClick={() => file && (booklet.value = { file, title: tr("Level {0} booklet", [level.number]) })}
     >
       <span class="badge">
         <FileText size={19} />
       </span>
       <span>
-        <div class="tile-title">Booklet</div>
-        <div class="tile-sub">{file ? `Level ${level.number} PDF` : 'No booklet found'}</div>
+        <div class="tile-title">{tr("Booklet")}</div>
+        <div class="tile-sub">{file ? tr("Level {0} PDF", [level.number]) : tr("No booklet found")}</div>
       </span>
     </button>
   )

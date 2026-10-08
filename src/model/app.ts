@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { batch, computed, signal } from '@preact/signals'
 import { player } from '../audio/player'
 import { deletePaths } from '../storage/idb'
@@ -190,11 +191,11 @@ export async function importPicked(picked: Picked[]) {
   try {
     files = placeFiles(await expandZips(picked))
   } catch (e) {
-    message.value = `Couldn't open that file: ${(e as Error).message}`
+    message.value = tr("Couldn't open that file: {0}", [(e as Error).message])
     return
   }
   if (files.length === 0) {
-    message.value = 'No supported audio or PDF files found. Pick a ZIP file.'
+    message.value = tr("No supported audio or PDF files found. Pick a ZIP file.")
     return
   }
   const before = new Set(allLevels.value.map((l) => l.id))
@@ -203,8 +204,8 @@ export async function importPicked(picked: Picked[]) {
   } catch (e) {
     message.value =
       e instanceof DOMException && e.name === 'QuotaExceededError'
-        ? 'The browser ran out of storage space. Free some space or import one level at a time.'
-        : `Import stopped: ${(e as Error).message}`
+        ? tr("The browser ran out of storage space. Free some space or import one level at a time.")
+        : tr("Import stopped: {0}", [(e as Error).message])
   } finally {
     importing.value = undefined
   }
@@ -235,17 +236,7 @@ export async function deleteCourse(course: Course) {
 export const isImported = (course: Course) =>
   course.levels.some((l) => l.lessons.some((t) => t.file.source === 'idb'))
 
-export function greeting(courseName?: string) {
+export function greeting(_courseName?: string) {
   const hour = new Date().getHours()
-  const lang = courseName?.toLowerCase().split(' for ')[0] ?? ''
-  const table: Record<string, [string, string, string]> = {
-    italian: ['Buongiorno!', 'Buon pomeriggio!', 'Buonasera!'],
-    russian: ['Доброе утро!', 'Добрый день!', 'Добрый вечер!'],
-    spanish: ['¡Buenos días!', '¡Buenas tardes!', '¡Buenas noches!'],
-    french: ['Bonjour !', 'Bon après-midi !', 'Bonsoir !'],
-    german: ['Guten Morgen!', 'Guten Tag!', 'Guten Abend!'],
-    portuguese: ['Bom dia!', 'Boa tarde!', 'Boa noite!'],
-  }
-  const words = Object.entries(table).find(([k]) => lang.includes(k))?.[1] ?? ['Good morning!', 'Good afternoon!', 'Good evening!']
-  return hour < 12 ? words[0] : hour < 18 ? words[1] : words[2]
+  return tr(hour < 12 ? 'Good morning!' : hour < 18 ? 'Good afternoon!' : 'Good evening!')
 }

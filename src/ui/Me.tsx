@@ -1,3 +1,5 @@
+import { LanguagePicker } from './LanguagePicker'
+import { t as tr, interfaceLanguage } from '../i18n/language'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { player } from '../audio/player'
 import {
@@ -29,12 +31,12 @@ export function MeView() {
   return (
     <main class="screen">
       <header>
-        <span class="chip">{level ? `Learning ${level.courseName}` : 'Revisit'}</span>
+        <span class="chip">{level ? tr("Learning {0}", [level.courseName]) : 'Revisit'}</span>
         <input
           class="name-input greeting"
           value={progress.learnerName}
-          placeholder="Your name"
-          aria-label="Your name"
+          placeholder={tr("Your name")}
+          aria-label={tr("Your name")}
           maxLength={40}
           onChange={(e) => (progress.learnerName = (e.currentTarget as HTMLInputElement).value.trim())}
         />
@@ -47,15 +49,15 @@ export function MeView() {
       <div class="stats">
         <div class="stat">
           <div class="stat-value">{hours(progress.totalListening)}</div>
-          <div class="stat-label">Listened</div>
+          <div class="stat-label">{tr("Listened")}</div>
         </div>
         <div class="stat">
           <div class="stat-value">{lessonsDone}</div>
-          <div class="stat-label">Lessons done</div>
+          <div class="stat-label">{tr("Lessons done")}</div>
         </div>
         <div class="stat">
           <div class="stat-value">{progress.bestStreak()}</div>
-          <div class="stat-label">Best streak</div>
+          <div class="stat-label">{tr("Best streak")}</div>
         </div>
       </div>
 
@@ -71,38 +73,39 @@ export function MeView() {
             <div style={{ width: `${(progress.completedCount(level.lessons) / Math.max(level.lessons.length, 1)) * 100}%` }} />
           </div>
           <p class="row-sub" style={{ marginTop: '8px' }}>
-            Lessons completed. Readings: {progress.completedCount(level.readings)} / {level.readings.length}
+             {tr("Lessons completed. Readings:")} {progress.completedCount(level.readings)} / {level.readings.length}
           </p>
         </div>
       )}
 
       <section>
         <div class="section-head" style={{ marginBottom: '10px' }}>
-          <h2>Settings</h2>
+          <h2>{tr("Settings")}</h2>
         </div>
         <div class="list">
+          <LanguagePicker />
           <div class="list-row">
             <div class="grow">
-              <div class="row-title">Autoplay next</div>
-              <div class="row-sub">Start the next lesson when one ends</div>
+              <div class="row-title">{tr("Autoplay next")}</div>
+              <div class="row-sub">{tr("Start the next lesson when one ends")}</div>
             </div>
-            <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label="Autoplay next" />
+            <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label={tr("Autoplay next")} />
           </div>
           <button class="list-row" onClick={() => (showCoursePicker.value = true)}>
             <Globe size={20} class="muted" />
-            <div class="grow row-title">Change language or level</div>
+            <div class="grow row-title">{tr("Change language or level")}</div>
             <ChevronRight size={18} class="muted" />
           </button>
           <button class="list-row" onClick={() => setManage(true)}>
             <FolderPlus size={20} class="muted" />
-            <div class="grow row-title">Courses</div>
+            <div class="grow row-title">{tr("Courses")}</div>
             <span class="row-sub">{courses.value.length}</span>
             <ChevronRight size={18} class="muted" />
           </button>
           {level && (
             <button class="list-row" onClick={() => setConfirmReset(true)}>
               <Restart size={20} class="muted" />
-              <div class="grow row-title">Reset Level {level.number} progress</div>
+              <div class="grow row-title">{tr("Reset Level {0} progress", [level.number])}</div>
             </button>
           )}
         </div>
@@ -111,15 +114,14 @@ export function MeView() {
       <Backup />
 
       <p class="note" style={{ textAlign: 'center' }}>
-        Your courses and progress stay in this browser. Nothing is uploaded.
-      </p>
+         {tr("Your courses and progress stay in this browser. Nothing is uploaded.")} </p>
 
       {manage && <ManageCourses close={() => setManage(false)} />}
       {confirmReset && level && (
         <Confirm
-          title={`Reset ${levelTitle(level)}?`}
-          body="Every lesson and reading in this level goes back to not started. Your listening stats stay."
-          action="Reset progress"
+          title={tr("Reset {0}?", [levelTitle(level)])}
+          body={tr("Every lesson and reading in this level goes back to not started. Your listening stats stay.")}
+          action={tr("Reset progress")}
           onConfirm={() => {
             progress.reset([...level.lessons, ...level.readings].map((t) => t.id))
             if (player.track.value?.levelID === level.id) player.seek(0)
@@ -144,15 +146,15 @@ function CurrentlyCard() {
         <Art seed={seedFor(lesson)} class="art-fill" />
       </div>
       <div class="grow" style={{ flex: 1 }}>
-        <div class="eyebrow muted">Currently</div>
+        <div class="eyebrow muted">{tr("Currently")}</div>
         <div class="row-title">{trackTitle(lesson)}</div>
-        <div class="row-sub">{p.position > 5 && p.duration ? `${minutes(remaining(p))} left` : levelTitle(level)}</div>
+        <div class="row-sub">{p.position > 5 && p.duration ? tr("{0} left", [minutes(remaining(p))]) : levelTitle(level)}</div>
       </div>
       <button
         class="play-fab"
         style={{ width: '52px', height: '52px' }}
         onClick={() => (playing ? player.pause() : isCurrent ? (player.play(), openPlayer()) : play(lesson))}
-        aria-label={playing ? 'Pause' : `Play ${trackTitle(lesson)}`}
+        aria-label={playing ? tr("Pause") : tr("Play {0}", [trackTitle(lesson)])}
       >
         {playing ? <Pause size={22} /> : <Play size={22} class="icon-play" />}
       </button>
@@ -174,14 +176,14 @@ function StreakCard() {
     <div class="card">
       <div class="row" style={{ justifyContent: 'space-between' }}>
         <div>
-          <div class="row-title">{streak === 1 ? '1-day streak' : `${streak}-day streak`}</div>
-          <div class="row-sub">A day counts once you listen for a minute.</div>
+          <div class="row-title">{streak === 1 ? tr("1-day streak") : tr("{0}-day streak", [streak])}</div>
+          <div class="row-sub">{tr("A day counts once you listen for a minute.")}</div>
         </div>
         <div class="streak-badge" style={{ width: '48px', height: '48px' }}>
           {streak}
         </div>
       </div>
-      <div class="week" aria-label={`Studied ${days.filter((d) => progress.isActive(d)).length} days this week`}>
+      <div class="week" aria-label={tr("Studied {0} days this week", [days.filter((d) => progress.isActive(d)).length])}>
         {days.map((d) => {
           const on = progress.isActive(d)
           return (
@@ -189,7 +191,7 @@ function StreakCard() {
               <div class={`week-dot ${on ? 'on' : ''} ${dayKey(d) === dayKey(today) ? 'today' : ''}`}>
                 {on && <Check size={16} strokeWidth={3.2} />}
               </div>
-              {d.toLocaleDateString(undefined, { weekday: 'narrow' })}
+              {d.toLocaleDateString(interfaceLanguage.value, { weekday: 'narrow' })}
             </div>
           )
         })}
@@ -211,21 +213,21 @@ function Backup() {
   return (
     <section>
       <div class="section-head" style={{ marginBottom: '10px' }}>
-        <h2>Backup</h2>
+        <h2>{tr("Backup")}</h2>
       </div>
       <div class="list">
         <button class="list-row" onClick={exportFile}>
           <Download size={20} class="muted" />
           <div class="grow">
-            <div class="row-title">Save progress to a file</div>
-            <div class="row-sub">Move it to another browser or device</div>
+            <div class="row-title">{tr("Save progress to a file")}</div>
+            <div class="row-sub">{tr("Move it to another browser or device")}</div>
           </div>
         </button>
         <button class="list-row" onClick={() => input.current?.click()}>
           <Upload size={20} class="muted" />
           <div class="grow">
-            <div class="row-title">Load progress from a file</div>
-            <div class="row-sub">Replaces the progress in this browser</div>
+            <div class="row-title">{tr("Load progress from a file")}</div>
+            <div class="row-sub">{tr("Replaces the progress in this browser")}</div>
           </div>
         </button>
       </div>
@@ -240,7 +242,7 @@ function Backup() {
           if (!file) return
           try {
             progress.importJSON(await file.text())
-            message.value = 'Progress loaded.'
+            message.value = tr("Progress loaded.")
           } catch (err) {
             message.value = (err as Error).message
           }
@@ -258,14 +260,13 @@ function ManageCourses({ close }: { close: () => void }) {
     navigator.storage?.estimate?.().then(setUsage, () => {})
   }, [courses.value])
   return (
-    <div class="sheet" role="dialog" aria-label="Courses" style={{ zIndex: 45 }}>
+    <div class="sheet" role="dialog" aria-label={tr("Courses")} style={{ zIndex: 45 }}>
       <div class="sheet-body">
         <div class="topbar">
           <span style={{ width: '44px' }} />
-          <div class="topbar-title">Courses</div>
+          <div class="topbar-title">{tr("Courses")}</div>
           <button class="btn secondary" style={{ minHeight: '40px', padding: '0 16px' }} onClick={close}>
-            Done
-          </button>
+             {tr("Done")} </button>
         </div>
         <div class="list">
           {courses.value.map((c) => (
@@ -273,33 +274,31 @@ function ManageCourses({ close }: { close: () => void }) {
               <div class="grow">
                 <div class="row-title">{c.name}</div>
                 <div class="row-sub">
-                  {c.levels.length === 1 ? '1 level' : `${c.levels.length} levels`}
-                  {isImported(c) ? ' · in this browser' : ' · shared by the dev server'}
+                  {c.levels.length === 1 ? tr("1 level") : tr("{0} levels", [c.levels.length])}
+                  {isImported(c) ? tr(" · in this browser") : tr(" · shared by the dev server")}
                 </div>
               </div>
               {isImported(c) && (
-                <button class="icon-btn" onClick={() => setPending(c)} aria-label={`Delete ${c.name}`} style={{ color: '#b3261e' }}>
+                <button class="icon-btn" onClick={() => setPending(c)} aria-label={tr("Delete {0}", [c.name])} style={{ color: '#b3261e' }}>
                   <Trash size={20} />
                 </button>
               )}
             </div>
           ))}
-          {courses.value.length === 0 && <div class="list-row row-sub">No courses yet.</div>}
+          {courses.value.length === 0 && <div class="list-row row-sub">{tr("No courses yet.")}</div>}
         </div>
         <ImportButtons />
         {usage?.usage !== undefined && (
           <p class="note">
-            Using {bytes(usage.usage)}
-            {usage.quota ? ` of about ${bytes(usage.quota)} available to this site` : ''}. Deleting a course removes its
-            audio from this browser; your progress stays.
-          </p>
+             {tr("Using")} {bytes(usage.usage)}
+            {usage.quota ? tr(" of about {0} available to this site", [bytes(usage.quota)]) : ''}{tr(". Deleting a course removes its audio from this browser; your progress stays.")} </p>
         )}
       </div>
       {pending && (
         <Confirm
-          title={`Delete ${pending.name}?`}
-          body="This removes the course's audio and booklets from this browser. Your progress is kept, so re-importing picks up where you left off."
-          action="Delete course"
+          title={tr("Delete {0}?", [pending.name])}
+          body={tr("This removes the course's audio and booklets from this browser. Your progress is kept, so re-importing picks up where you left off.")}
+          action={tr("Delete course")}
           onConfirm={() => void deleteCourse(pending)}
           close={() => setPending(undefined)}
         />
@@ -311,8 +310,7 @@ function ManageCourses({ close }: { close: () => void }) {
 export function ImportButtons() {
   return (
     <button class="btn block" onClick={() => openImporter('files')}>
-      <Upload size={20} /> Pick a ZIP file
-    </button>
+      <Upload size={20} />  {tr("Pick a ZIP file")} </button>
   )
 }
 
@@ -351,8 +349,7 @@ export function Confirm({
             {action}
           </button>
           <button class="btn secondary block" onClick={close}>
-            Cancel
-          </button>
+             {tr("Cancel")} </button>
         </div>
       </div>
     </div>

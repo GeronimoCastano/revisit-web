@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { importPicked } from '../model/app'
 import { pickedFromInput } from '../storage/importer'
@@ -30,7 +31,7 @@ export function ScrubBar({ value, duration, onSeek }: { value: number; duration:
         ref={ref}
         class="scrub"
         role="slider"
-        aria-label="Position"
+        aria-label={tr("Position")}
         aria-valuemin={0}
         aria-valuemax={Math.round(duration)}
         aria-valuenow={Math.round(shown)}

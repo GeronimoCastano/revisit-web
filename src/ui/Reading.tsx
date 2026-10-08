@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { player, skipInterval } from '../audio/player'
 import { booklet, currentLevel, levelByID, play, playerRoute, showLessonList } from '../model/app'
@@ -28,23 +29,23 @@ export function ReadingTab() {
     <main class="screen">
       <header>
         <span class="chip">
-          {level.courseName} · Level {level.number}
+          {level.courseName}  {tr("· Level")} {level.number}
         </span>
-        <h1 class="greeting">Reading</h1>
+        <h1 class="greeting">{tr("Reading")}</h1>
       </header>
 
       {level.booklets[0] && (
         <div class="list">
           <button
             class="list-row"
-            onClick={() => (booklet.value = { file: level.booklets[0], title: `Level ${level.number} booklet` })}
+            onClick={() => (booklet.value = { file: level.booklets[0], title: tr("Level {0} booklet", [level.number]) })}
           >
             <span class="badge">
               <FileText size={19} />
             </span>
             <div class="grow">
-              <div class="row-title">Reading booklet</div>
-              <div class="row-sub">Every reading, as printed</div>
+              <div class="row-title">{tr("Reading booklet")}</div>
+              <div class="row-sub">{tr("Every reading, as printed")}</div>
             </div>
             <ChevronRight size={18} class="muted" />
           </button>
@@ -54,9 +55,9 @@ export function ReadingTab() {
       {level.readings.length > 0 ? (
         <section>
           <div class="section-head" style={{ marginBottom: '10px' }}>
-            <h2>Readings</h2>
+            <h2>{tr("Readings")}</h2>
             <span class="muted">
-              {progress.completedCount(level.readings)} / {level.readings.length} done
+              {progress.completedCount(level.readings)} / {level.readings.length} {tr("done")}
             </span>
           </div>
           <div class="list reading-list">
@@ -69,8 +70,7 @@ export function ReadingTab() {
         <div class="empty card">
           <BookOpen size={36} />
           <p>
-            No reading audio in Level {level.number}. Put the reading MP3s and booklet PDF in a “Readings” folder inside the
-            level folder, then import it again.
+            {tr("No reading audio in this level")}
           </p>
         </div>
       )}
@@ -78,7 +78,7 @@ export function ReadingTab() {
       {hasGuides && (
         <section>
           <div class="section-head" style={{ marginBottom: '10px' }}>
-            <h2>Course guide</h2>
+            <h2>{tr("Course guide")}</h2>
           </div>
           <div class="list">
             {level.guides.map((g) => (
@@ -117,8 +117,8 @@ export function ReadingTab() {
 
 function durationLabel(t: Track) {
   const p = progress.progress(t.id)
-  if (p.completed) return 'Done'
-  if (isInProgress(p)) return `${minutes(remaining(p))} left`
+  if (p.completed) return tr("Done")
+  if (isInProgress(p)) return tr("{0} left", [minutes(remaining(p))])
   return p.duration ? minutes(p.duration) : ''
 }
 
@@ -126,7 +126,7 @@ function ReadingRow({ track, level }: { track: Track; level: Level }) {
   const p = progress.progress(track.id)
   const f = fraction(p)
   const lesson = lessonForReading(level, track)
-  const context = lesson !== undefined ? `With Lesson ${lesson}` : track.isPart ? 'Several readings in one recording' : ''
+  const context = lesson !== undefined ? tr("With Lesson {0}", [lesson]) : track.isPart ? tr("Several readings in one recording") : ''
   const sub = [context, durationLabel(track)].filter(Boolean).join(' · ')
   return (
     <button class="list-row" onClick={() => play(track)}>
@@ -174,7 +174,7 @@ export function ReadingPlayer() {
       },
       (e: Error) => {
         if (cancelled) return
-        setError(`Couldn't read the booklet: ${e.message}`)
+        setError(tr("Couldn't read the booklet: {0}", [e.message]))
         setLoaded({ id: track.id, units: [], all: [], estimated: false })
       },
     )
@@ -194,25 +194,24 @@ export function ReadingPlayer() {
     <div class="sheet" role="dialog" aria-label={`${trackTitle(track)} reading`}>
       <div class="sheet-body" style={{ gap: '14px' }}>
         <div class="topbar">
-          <button class="icon-btn" onClick={close} aria-label="Close reading">
+          <button class="icon-btn" onClick={close} aria-label={tr("Close reading")}>
             <ChevronDown size={28} />
           </button>
           <div class="topbar-title">
-            Reading
-            <div class="row-sub">{track.coverage || track.isPart ? trackTitle(track) : `Reading lesson ${track.number}`}</div>
+             {tr("Reading")} <div class="row-sub">{track.coverage || track.isPart ? trackTitle(track) : tr("Reading lesson {0}", [track.number])}</div>
           </div>
           <button
             class="icon-btn"
             onClick={() => level && (showLessonList.value = { level, kind: 'reading' })}
-            aria-label="Choose a reading"
+            aria-label={tr("Choose a reading")}
           >
             <List size={22} />
           </button>
           {file && (
             <button
               class="icon-btn"
-              onClick={() => (booklet.value = { file, page: shown[0]?.firstPage, title: `Level ${level!.number} booklet` })}
-              aria-label="Open booklet"
+              onClick={() => (booklet.value = { file, page: shown[0]?.firstPage, title: tr("Level {0} booklet", [level!.number]) })}
+              aria-label={tr("Open booklet")}
             >
               <FileText size={22} />
             </button>
@@ -222,7 +221,7 @@ export function ReadingPlayer() {
             style={showTranslation ? { background: 'var(--pale)', color: 'var(--primary)' } : undefined}
             disabled={!canTranslate}
             onClick={() => setShowTranslation(!showTranslation)}
-            aria-label={showTranslation ? 'Hide translation' : 'Show translation'}
+            aria-label={showTranslation ? tr("Hide translation") : tr("Show translation")}
             aria-pressed={showTranslation}
           >
             <Translate size={22} />
@@ -232,13 +231,13 @@ export function ReadingPlayer() {
         {ready && (shown.length > 1 || loaded.estimated) && (
           <div class="unit-chips">
             {shown.map((u) => (
-              <button key={u.ordinal} onClick={() => jump(u.ordinal)} aria-label={`Reading lesson ${u.ordinal}`}>
+              <button key={u.ordinal} onClick={() => jump(u.ordinal)} aria-label={tr("Reading lesson {0}", [u.ordinal])}>
                 {u.ordinal}
               </button>
             ))}
             {loaded.estimated && (
               <button class="all" onClick={() => setShowAll(!showAll)}>
-                {showAll ? 'Fewer' : 'All lessons'}
+                {showAll ? tr("Fewer") : tr("All lessons")}
               </button>
             )}
           </div>
@@ -247,19 +246,17 @@ export function ReadingPlayer() {
         {error && <div class="error">{error}</div>}
 
         {!ready ? (
-          <div class="empty">Reading the booklet…</div>
+          <div class="empty">{tr("Reading the booklet…")}</div>
         ) : shown.length > 0 ? (
           <>
             {shown.some(hasStressMarks) && (
               <p class="note" style={{ textAlign: 'right' }}>
-                Stressed vowels are <span style={{ color: 'var(--stress)', fontWeight: 900, textDecoration: 'underline' }}>underlined</span>
+                 {tr("Stressed vowels are")} <span style={{ color: 'var(--stress)', fontWeight: 900, textDecoration: 'underline' }}>{tr("underlined")}</span>
               </p>
             )}
             {loaded.estimated && !showAll && (
               <p class="note">
-                This recording holds several reading lessons, roughly {shown[0].ordinal}–{shown[shown.length - 1].ordinal} of the
-                booklet. Tap “All lessons” if it drifts.
-              </p>
+                 {tr("This recording holds several reading lessons, roughly")} {shown[0].ordinal}–{shown[shown.length - 1].ordinal}  {tr("of the booklet. Tap “All lessons” if it drifts.")} </p>
             )}
             {shown.map((u) => (
               <UnitSection key={u.ordinal} unit={u} file={file!} showTranslation={showTranslation} showHeading={shown.length > 1 || !!u.heading} />
@@ -270,13 +267,12 @@ export function ReadingPlayer() {
             <BookOpen size={40} />
             <p>
               {file
-                ? "This reading isn't in the booklet. Listen along, or browse the whole booklet."
-                : 'No booklet was found for this level. Add the booklet PDF to the Readings folder to read along.'}
+                ? tr("This reading isn't in the booklet. Listen along, or browse the whole booklet.")
+                : tr("No booklet was found for this level.")}
             </p>
             {file && (
-              <button class="btn" onClick={() => (booklet.value = { file, title: `Level ${level!.number} booklet` })}>
-                Open booklet
-              </button>
+              <button class="btn" onClick={() => (booklet.value = { file, title: tr("Level {0} booklet", [level!.number]) })}>
+                 {tr("Open booklet")} </button>
             )}
           </div>
         )}
@@ -285,24 +281,24 @@ export function ReadingPlayer() {
         <div class="reading-bar">
           <ScrubBar value={player.currentTime.value} duration={player.duration.value} onSeek={(s) => player.seek(s)} />
           <div class="row">
-            <button class="icon-btn" onClick={() => player.previous()} aria-label="Previous reading">
+            <button class="icon-btn" onClick={() => player.previous()} aria-label={tr("Previous reading")}>
               <SkipBack size={20} class="muted" />
             </button>
-            <button class="icon-btn" onClick={() => player.skip(-skipInterval)} aria-label="Back 10 seconds" style={{ color: 'var(--primary)' }}>
+            <button class="icon-btn" onClick={() => player.skip(-skipInterval)} aria-label={tr("Back 10 seconds")} style={{ color: 'var(--primary)' }}>
               <Back10 size={28} strokeWidth={2} />
             </button>
             <button
               class="play-fab"
               style={{ width: '60px', height: '60px' }}
               onClick={() => player.togglePlayPause()}
-              aria-label={player.isPlaying.value ? 'Pause' : 'Play'}
+              aria-label={player.isPlaying.value ? tr("Pause") : tr("Play")}
             >
               {player.isPlaying.value ? <Pause size={24} /> : <Play size={24} class="icon-play" />}
             </button>
-            <button class="icon-btn" onClick={() => player.skip(skipInterval)} aria-label="Forward 10 seconds" style={{ color: 'var(--primary)' }}>
+            <button class="icon-btn" onClick={() => player.skip(skipInterval)} aria-label={tr("Forward 10 seconds")} style={{ color: 'var(--primary)' }}>
               <Forward10 size={28} strokeWidth={2} />
             </button>
-            <button class="icon-btn" onClick={() => player.next()} disabled={!player.hasNext} aria-label="Next reading">
+            <button class="icon-btn" onClick={() => player.next()} disabled={!player.hasNext} aria-label={tr("Next reading")}>
               <SkipForward size={20} class="muted" />
             </button>
           </div>
@@ -326,15 +322,14 @@ function UnitSection({
   const stress = hasStressMarks(unit)
   return (
     <section class="unit" id={`unit-${unit.ordinal}`}>
-      {showHeading && <h2 class="unit-heading">{unit.heading ?? `Reading ${unit.ordinal}`}</h2>}
+      {showHeading && <h2 class="unit-heading">{unit.heading ?? tr("Reading {0}", [unit.ordinal])}</h2>}
       {unit.blocks.map((b, i) => (
         <Block key={i} block={b} file={file} stress={stress} english={showTranslation ? unit.inlineTranslations : undefined} />
       ))}
       {showTranslation && !unit.inlineTranslations && unit.translation.length > 0 && (
         <>
           <h3 class="unit-heading" style={{ fontSize: '15px' }}>
-            Translation
-          </h3>
+             {tr("Translation")} </h3>
           {unit.translation.map((b, i) => (
             <Block key={`t${i}`} block={b} file={file} stress={false} />
           ))}
@@ -409,7 +404,7 @@ export function PageImage({ file, index, class: className = 'page-image' }: { fi
     observer.observe(canvas)
     return () => observer.disconnect()
   }, [fileKey(file), index])
-  return <canvas ref={ref} class={className} style={{ aspectRatio: '0.72' }} aria-label={`Booklet page ${index + 1}`} />
+  return <canvas ref={ref} class={className} style={{ aspectRatio: '0.72' }} aria-label={tr("Booklet page {0}", [index + 1])} />
 }
 
 // MARK: - Booklet
@@ -439,11 +434,10 @@ export function BookletViewer() {
           <span style={{ width: '44px' }} />
           <div class="topbar-title">{route.title}</div>
           <button class="btn secondary" style={{ minHeight: '40px', padding: '0 16px' }} onClick={close}>
-            Done
-          </button>
+             {tr("Done")} </button>
         </div>
-        {error && <div class="error">Couldn't open the PDF: {error}</div>}
-        {!count && !error && <div class="empty">Opening…</div>}
+        {error && <div class="error">{tr("Couldn't open the PDF:")} {error}</div>}
+        {!count && !error && <div class="empty">{tr("Opening…")}</div>}
         <div class="booklet-pages">
           {count &&
             Array.from({ length: count }, (_, i) => (

@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/language'
 export type TrackKind = 'lesson' | 'reading' | 'guide'
 
 /** Where a file's bytes live: imported into this browser, or served by the local dev server. */
@@ -48,30 +49,30 @@ export interface Course {
 export function trackTitle(t: Track): string {
   switch (t.kind) {
     case 'lesson':
-      return `Lesson ${t.number}`
+      return tr("Lesson {0}", [t.number])
     case 'reading':
-      if (t.coverage) return `Readings ${t.coverage[0]}–${t.coverage[1]}`
-      return t.isPart ? `Readings, Part ${t.number}` : `Reading ${t.number}`
+      if (t.coverage) return tr("Readings {0}–{1}", [t.coverage[0], t.coverage[1]])
+      return t.isPart ? tr("Readings, Part {0}", [t.number]) : tr("Reading {0}", [t.number])
     case 'guide':
-      return t.name ?? 'Guide'
+      return t.name ?? tr("Guide")
   }
 }
 
 export function trackLongTitle(t: Track): string {
   switch (t.kind) {
     case 'lesson':
-      return `Lesson ${t.number}`
+      return tr("Lesson {0}", [t.number])
     case 'reading':
-      if (t.coverage) return `Reading Lessons ${t.coverage[0]}–${t.coverage[1]}`
-      return t.isPart ? `Readings, Part ${t.number}` : `Reading Lesson ${t.number}`
+      if (t.coverage) return tr("Reading Lessons {0}–{1}", [t.coverage[0], t.coverage[1]])
+      return t.isPart ? tr("Readings, Part {0}", [t.number]) : tr("Reading Lesson {0}", [t.number])
     case 'guide':
-      return t.name ?? 'Guide'
+      return t.name ?? tr("Guide")
   }
 }
 
-export const levelTitle = (l: Level) => `${l.courseName} Level ${l.number}`
+export const levelTitle = (l: Level) => tr("{0} Level {1}", [l.courseName, l.number])
 /** The level a track belongs to, e.g. "Russian Level 3". */
-export const trackLevelTitle = (t: Track) => `${t.courseName} Level ${t.levelNumber}`
+export const trackLevelTitle = (t: Track) => tr("{0} Level {1}", [t.courseName, t.levelNumber])
 
 /** True when there's one recording per reading lesson; older courses instead put
  *  many reading lessons into a couple of long recordings. */

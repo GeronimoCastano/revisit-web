@@ -1,3 +1,5 @@
+import { LanguagePicker } from './LanguagePicker'
+import { t as tr } from '../i18n/language'
 import { useEffect, useState } from 'preact/hooks'
 import { player, skipInterval } from '../audio/player'
 import {
@@ -40,12 +42,12 @@ import { ImportButtons } from './Me'
 
 export function TabBar() {
   const items = [
-    ['learn', 'Learn', Cap],
-    ['reading', 'Reading', BookOpen],
-    ['me', 'Me', User],
+    ['learn', tr("Learn"), Cap],
+    ['reading', tr("Reading"), BookOpen],
+    ['me', tr("Me"), User],
   ] as const
   return (
-    <nav class="tabbar" aria-label="Sections">
+    <nav class="tabbar" aria-label={tr("Sections")}>
       {items.map(([id, label, Icon]) => (
         <button
           key={id}
@@ -71,20 +73,20 @@ export function MiniPlayer() {
   const playing = player.isPlaying.value
   return (
     <div class="mini">
-      <button class="mini-art" onClick={openPlayer} aria-label="Open player">
+      <button class="mini-art" onClick={openPlayer} aria-label={tr("Open player")}>
         <Art seed={seedFor(t)} class="art-fill" />
       </button>
       <button class="mini-text" onClick={openPlayer}>
         <div class="mini-title">{trackLongTitle(t)}</div>
         <div class="mini-sub">
           {trackLevelTitle(t)}
-          {player.duration.value > 0 && ` · ${minutes(player.remaining)} left`}
+          {player.duration.value > 0 && tr(" · {0} left", [minutes(player.remaining)])}
         </div>
       </button>
-      <button class="round" onClick={() => player.skip(-skipInterval)} aria-label="Back 10 seconds">
+      <button class="round" onClick={() => player.skip(-skipInterval)} aria-label={tr("Back 10 seconds")}>
         <Back10 size={24} strokeWidth={2} />
       </button>
-      <button class="round solid" onClick={() => player.togglePlayPause()} aria-label={playing ? 'Pause' : 'Play'}>
+      <button class="round solid" onClick={() => player.togglePlayPause()} aria-label={playing ? tr("Pause") : tr("Play")}>
         {playing ? <Pause size={20} /> : <Play size={20} class="icon-play" />}
       </button>
       <div class="mini-progress" style={{ width: `${player.fraction * 100}%` }} />
@@ -104,18 +106,18 @@ export function CoursePicker() {
   progress.state.value
 
   return (
-    <div class="sheet" role="dialog" aria-label="Choose a course" style={{ zIndex: 45 }}>
+    <div class="sheet" role="dialog" aria-label={tr("Choose a course")} style={{ zIndex: 45 }}>
       <div class="sheet-body">
         <div class="topbar">
           {course && courses.value.length > 1 ? (
-            <button class="icon-btn" onClick={() => setCourse(undefined)} aria-label="All languages">
+            <button class="icon-btn" onClick={() => setCourse(undefined)} aria-label={tr("All languages")}>
               <ChevronLeft size={26} />
             </button>
           ) : (
             <span style={{ width: '44px' }} />
           )}
-          <div class="topbar-title">{course ? course.name : 'Languages'}</div>
-          <button class="icon-btn" onClick={close} aria-label="Close">
+          <div class="topbar-title">{course ? course.name : tr("Languages")}</div>
+          <button class="icon-btn" onClick={close} aria-label={tr("Close")}>
             <Close size={24} />
           </button>
         </div>
@@ -130,9 +132,9 @@ export function CoursePicker() {
                   </span>
                   <div class="grow">
                     <div class="row-title">{c.name}</div>
-                    <div class="row-sub">{c.levels.length === 1 ? '1 level' : `${c.levels.length} levels`}</div>
+                    <div class="row-sub">{c.levels.length === 1 ? tr("1 level") : tr("{0} levels", [c.levels.length])}</div>
                   </div>
-                  {currentLevel.value?.courseName === c.name && <span class="chip">In progress</span>}
+                  {currentLevel.value?.courseName === c.name && <span class="chip">{tr("In progress")}</span>}
                   <ChevronRight size={18} class="muted" />
                 </button>
               ))}
@@ -148,11 +150,11 @@ export function CoursePicker() {
                 return (
                   <button class="list-row" key={l.id} onClick={() => setSelection(l.id)} aria-pressed={on}>
                     <div class="grow">
-                      <div class="row-title">Level {l.number}</div>
+                      <div class="row-title">{tr("Level")} {l.number}</div>
                       <div class="row-sub">
                         {done === l.lessons.length && done > 0
-                          ? 'Completed'
-                          : `${done} of ${l.lessons.length} lessons${currentLevel.value?.id === l.id ? ' · in progress' : ''}`}
+                          ? tr("Completed")
+                          : tr("{0} of {1} lessons{2}", [done, l.lessons.length, currentLevel.value?.id === l.id ? tr(" · in progress") : ''])}
                       </div>
                     </div>
                     <span
@@ -179,8 +181,7 @@ export function CoursePicker() {
                 close()
               }}
             >
-              Start learning
-            </button>
+               {tr("Start learning")} </button>
           </>
         )}
       </div>
@@ -208,7 +209,7 @@ export function LessonList() {
   if (!route) return null
   const { level, kind } = route
   const list = kind === 'lesson' ? level.lessons : kind === 'reading' ? level.readings : level.guides
-  const title = kind === 'lesson' ? 'Lessons' : kind === 'reading' ? 'Readings' : 'Guides'
+  const title = kind === 'lesson' ? tr("Lessons") : kind === 'reading' ? tr("Readings") : tr("Guides")
   return (
     <div class="sheet" role="dialog" aria-label={title} style={{ zIndex: 45 }}>
       <div class="sheet-body">
@@ -218,17 +219,17 @@ export function LessonList() {
             {title}
             <div class="row-sub">{levelTitle(level)}</div>
           </div>
-          <button class="icon-btn" onClick={close} aria-label="Close">
+          <button class="icon-btn" onClick={close} aria-label={tr("Close")}>
             <Close size={24} />
           </button>
         </div>
         <div class="list">
           <div class="list-row">
             <div class="grow">
-              <div class="row-title">Autoplay next</div>
-              <div class="row-sub">Start the next one when this one ends</div>
+              <div class="row-title">{tr("Autoplay next")}</div>
+              <div class="row-sub">{tr("Start the next one when this one ends")}</div>
             </div>
-            <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label="Autoplay next" />
+            <Toggle on={progress.autoplay} onChange={(v) => (progress.autoplay = v)} label={tr("Autoplay next")} />
           </div>
         </div>
         <div class="list">
@@ -254,11 +255,11 @@ export function LessonList() {
                   <div class="row-title">{trackTitle(t)}</div>
                   <div class="row-sub">
                     {current && player.isPlaying.value
-                      ? 'Playing'
+                      ? tr("Playing")
                       : p.completed
-                        ? 'Completed'
+                        ? tr("Completed")
                         : isInProgress(p)
-                          ? `${minutes(remaining(p))} left`
+                          ? tr("{0} left", [minutes(remaining(p))])
                           : p.duration
                             ? minutes(p.duration)
                             : ''}
@@ -282,29 +283,28 @@ export function DrivingMode() {
   const t = player.track.value
   const playing = player.isPlaying.value
   return (
-    <div class="sheet driving" role="dialog" aria-label="Driving mode" style={{ zIndex: 55 }}>
+    <div class="sheet driving" role="dialog" aria-label={tr("Driving mode")} style={{ zIndex: 55 }}>
       <div class="sheet-body">
         <div class="topbar">
           <button class="btn secondary" style={{ minHeight: '48px', background: 'transparent', color: '#fff', borderColor: 'rgba(255,255,255,.25)' }} onClick={close}>
-            Back
-          </button>
+             {tr("Back")} </button>
           <div class="topbar-title">{t ? trackTitle(t) : ''}</div>
           <span style={{ width: '60px' }} />
         </div>
         <div class="driving-grid">
-          <button onClick={() => player.previous()} aria-label="Previous">
+          <button onClick={() => player.previous()} aria-label={tr("Previous")}>
             <SkipBack size={44} />
           </button>
-          <button onClick={() => player.next()} disabled={!player.hasNext} aria-label="Next">
+          <button onClick={() => player.next()} disabled={!player.hasNext} aria-label={tr("Next")}>
             <SkipForward size={44} />
           </button>
-          <button class="play" onClick={() => player.togglePlayPause()} aria-label={playing ? 'Pause' : 'Play'}>
+          <button class="play" onClick={() => player.togglePlayPause()} aria-label={playing ? tr("Pause") : tr("Play")}>
             {playing ? <Pause size={72} /> : <Play size={72} />}
           </button>
-          <button onClick={() => player.skip(-skipInterval)} aria-label="Back 10 seconds">
+          <button onClick={() => player.skip(-skipInterval)} aria-label={tr("Back 10 seconds")}>
             <Back10 size={56} strokeWidth={1.8} />
           </button>
-          <button onClick={() => player.skip(skipInterval)} aria-label="Forward 10 seconds">
+          <button onClick={() => player.skip(skipInterval)} aria-label={tr("Forward 10 seconds")}>
             <Forward10 size={56} strokeWidth={1.8} />
           </button>
         </div>
@@ -331,7 +331,7 @@ export function CompletionBanner() {
       <div class="grow">
         <div class="banner-title">{trackLongTitle(notice.track)} complete</div>
         {notice.next && (
-          <div class="banner-sub">{notice.autoplayed ? `Now playing ${trackTitle(notice.next)}` : `Next: ${trackTitle(notice.next)}`}</div>
+          <div class="banner-sub">{notice.autoplayed ? tr("Now playing {0}", [trackTitle(notice.next)]) : tr("Next: {0}", [trackTitle(notice.next)])}</div>
         )}
       </div>
       {notice.next && !notice.autoplayed && (
@@ -342,10 +342,9 @@ export function CompletionBanner() {
             finished.value = undefined
           }}
         >
-          Play
-        </button>
+           {tr("Play")} </button>
       )}
-      <button class="icon-btn" onClick={() => (finished.value = undefined)} aria-label="Dismiss">
+      <button class="icon-btn" onClick={() => (finished.value = undefined)} aria-label={tr("Dismiss")}>
         <Close size={18} />
       </button>
     </div>
@@ -359,10 +358,9 @@ export function ImportBanner() {
   return (
     <div class="banner" role="status">
       <div class="grow">
-        <div class="banner-title">Importing {p.name}…</div>
+        <div class="banner-title">{tr("Importing")} {p.name}…</div>
         <div class="banner-sub">
-          {bytes(p.copiedBytes)} of {bytes(p.totalBytes)} · keep this page open
-        </div>
+          {bytes(p.copiedBytes)} {tr("of")} {bytes(p.totalBytes)}  {tr("· keep this page open")} </div>
         <div class="bar">
           <div style={{ width: `${f * 100}%` }} />
         </div>
@@ -384,7 +382,7 @@ export function MessageBanner() {
       <div class="grow banner-title" style={{ fontWeight: 700 }}>
         {text}
       </div>
-      <button class="icon-btn" onClick={() => (message.value = undefined)} aria-label="Dismiss">
+      <button class="icon-btn" onClick={() => (message.value = undefined)} aria-label={tr("Dismiss")}>
         <Close size={18} />
       </button>
     </div>
@@ -402,21 +400,18 @@ export function WelcomeView() {
       <div>
         <h1 class="wordmark">Revisit</h1>
         <p class="hero-sub muted" style={{ fontSize: '18px', marginTop: '8px' }}>
-          Your audio lessons, remembered. Pick up every lesson exactly where you left it.
-        </p>
+           {tr("Your audio lessons, remembered. Pick up every lesson exactly where you left it.")} </p>
       </div>
       <ImportButtons />
+      <div class="list"><LanguagePicker /></div>
       <div class="card">
         <div class="row-title" style={{ marginBottom: '6px' }}>
-          What to import
-        </div>
+           {tr("What to import")} </div>
         <p class="row-sub" style={{ fontSize: '14px', marginBottom: '12px' }}>
-          Pick a ZIP file containing your audio and any accompanying PDFs.
-        </p>
+           {tr("Pick a ZIP file containing your audio and any accompanying PDFs.")} </p>
       </div>
       <p class="note" style={{ textAlign: 'center' }}>
-        Files stay in this browser. Nothing is uploaded. Add Revisit to your Home Screen so the browser keeps them.
-      </p>
+         {tr("Files stay in this browser. Nothing is uploaded. Add Revisit to your Home Screen so the browser keeps them.")} </p>
     </main>
   )
 }

@@ -17,6 +17,12 @@ Imported files and progress stay in your browser. Nothing is uploaded.
 
 Open Revisit and choose **Pick a ZIP file**.
 
+## Interface language
+
+The interface follows your device or browser language. English and Spanish are supported;
+other languages fall back to English. Choose System, English, or Español in Settings to
+change this independently of your imported files.
+
 ## Development
 
 ```sh
